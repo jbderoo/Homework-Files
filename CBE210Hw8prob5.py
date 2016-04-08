@@ -3,19 +3,25 @@ import math as m
 import matplotlib.pyplot as plt
 from matplotlib.backends.backend_pdf import PdfPages
 
-temp_k    = 30 + 273.15 # K
-temp_c    = 30          # C
-propanol  = np.linspace(0,1,100) # mol %
-water     = 1 - propanol           # mol %
+""" calculates saturation pressure
+dfg
+"""
+
 def P_sat(A, B, C, temp_c):
     P_sat = m.exp(A - (B / (temp_c + C)))
     return P_sat
+
+temp_c    = 30              # C
+temp_k    = temp_c + 273.15 # K
+propanol  = np.linspace(0,1,100)   # mol %
+water     = 1 - propanol           # mol %
 Aw = 16.3872
 Bw = 3885.70
 Cw = 230.17 # Water constants
 A2 = 16.6796
 B2 = 3640.20
 C2 = 219.61 # 2-Propanol " "
+pdf_filename = '/Users/jderoo/Desktop/Spring_2016/CBE_210_Hw8_Prob5.pdf'
 
 P_sat_h2o    = P_sat(Aw, Bw, Cw, temp_c)
 P_sat_2p     = P_sat(A2, B2, C2, temp_c)
@@ -35,8 +41,8 @@ for x in range(len(propanol)):
     vap_mol_2P[x] = P_sat_2p * propanol[x] * correct2[x] / BP_press2[x]
 
 
-pp  = PdfPages('Desktop/CBE_210_Hw8_Prob5.pdf')
-fig = plt.figure(1)
+pp  = PdfPages(pdf_filename)
+"""fig = plt.figure(1)
 ax  = fig.add_subplot(111)
 plt.figure(1)
 plt.plot(propanol, BP_press, 'r', label= 'liquid line')
@@ -46,6 +52,7 @@ ax.set_xlabel('Mole Fraction')
 ax.set_ylabel('Pressure KPa')
 ax.set_title('P-x-y curve for traditional Raoult')
 pp.savefig()
+"""
 
 fig = plt.figure(2)
 ax  = fig.add_subplot(111)

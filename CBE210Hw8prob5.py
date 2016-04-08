@@ -43,7 +43,7 @@ for x in range(len(propanol)):
     BP_press[x] = (P_sat_2p * propanol[x]) + (P_sat_h2o * water[x])
 # finds and stores mole fraction of 2-Propanol in vapor phase 
     vap_mol_2p[x] = (P_sat_2p / BP_press[x]) * propanol[x]
-# finds corrective factor for propanol
+# finds and stores corrective factor for propanol
     correct2[x] = m.exp(1.42 * (water[x]    ** 2))   
 # finds and stores corrective factor for water 
     correct1[x] = m.exp(1.42 * (propanol[x] ** 2))

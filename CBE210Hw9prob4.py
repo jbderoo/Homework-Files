@@ -14,35 +14,44 @@ Z          = .282  # compressibility factor
 vol_crit   = 262.7 # mL / mol
 
 #----Given Data----
-temp_c    = 40                   # degree Celcius 
-temp_k    = temp_c + 273.15      # Kelvin
-press     = np.linspace(0,10,20) # Bar
-vap_press = 5.28                 # Bar
-phi       = np.zeros(shape=(len(press),1)) # storage for the for loop 
-R         = 83.14                # gas constant in mL bar / mol Kelvin
-fugacity  = np.zeros(shape=(len(press),1)) # storage for the for loop 
+R              = 83.14                              # gas constant in mL bar / mol Kelvin
+vap_press      = 5.28                               # Bar
+temp_c         =  40                                # degree Celcius 
+temp_k         = temp_c + 273.15                    # Kelvin
+press_vap      = np.linspace(0,vap_press,100)       # Bar
+press_liq      = np.linspace(vap_press,10,100)      # Bar
+phi_vap        = np.zeros(shape=(len(press_vap),1)) # storage for the for loop 
+phi_liq        = np.zeros(shape=(len(press_vap),1)) # storage for the for loop 
+fugacity_vap   = np.zeros(shape=(len(press_vap),1)) # storage for the for loop 
+fugacity_liq   = np.zeros(shape=(len(press_vap),1)) # storage for the for loop 
 
 #---start calcs----
-temp_r = temp_k / temp_crit # finds reduced temperature 
-press_r_sat = vap_press/press_crit # reduced saturation pressure 
-vol_sat = vol_crit * (Z ** ((1 - temp_r) ** 2/7)) # finds liquid mL/mol 
+temp_r      = temp_k / temp_crit                      # finds reduced temperature 
+press_r_sat = vap_press/press_crit                    # reduced saturation pressure 
+vol_sat     = vol_crit * (Z ** ((1 - temp_r) ** 2/7)) # finds liquid mL/mol 
+print(vol_sat)
 
-for i in range(len(press)):
+for i in range(len(press_vap)):
 #---Graph 1---
-    press_r = press[i] / press_crit # finds new reduced pressure
-    term1   = press_r / temp_r # making math easy
-    term2   = .083 - (.422 / (temp_r ** 1.6)) # making math easy
-    term3   = .139 - (.172 / (temp_r ** 4.2))  # making math easy
-    term4   = term3 * omega # making math easy
-    term5   = term2 + term4 # making math easy
-    phi[i]  = m.exp(term1 * term5) # calculates fugacity coefficent 
+    press_r_vap = press_vap[i] / press_crit       # finds new reduced pressure
+    press_r_liq = press_liq[i] / press_crit       # finds new reduced pressure
+    term1       = press_r_vap / temp_r            # making math easy
+    term1b      = press_liq[i] / press_crit
+    term2       = .083 - (.422 / (temp_r ** 1.6)) # making math easy
+    term3       = .139 - (.172 / (temp_r ** 4.2)) # making math easy
+    term4       = term3 * omega                   # making math easy
+    beta_hat    = term2 + term4                   # making math easy
+    phi_vap[i]  = m.exp(term1 * beta_hat)         # calculates fugacity coefficent 
 #---Graph 2---
-    phi_sat     = m.exp(press_r_sat * term5) # finds phi for saturation pressure
-    poynting    = (vol_sat * (press[i] - vap_press)) / (R * temp_k) # Poynting correction	 
-    fugacity[i] = phi_sat * vap_press * m.exp(poynting) # stores fugacity calcs
-
+    phi_sat         = m.exp(press_r_sat * beta_hat / temp_r)                # finds phi for saturation pressure
+    poynting1       = (vol_sat * (press_vap[i] - vap_press)) / (R * temp_k) # Poynting correction	 
+    poynting2       = (vol_sat * (press_liq[i] - vap_press)) / (R * temp_k) # Poynting correction	 
+    fugacity_liq[i] = phi_sat * vap_press * m.exp(poynting2)                # fugacity liquid calculation
+    phi_liq[i]      = fugacity_liq[i] / press_liq[i]                        # calculates fugacity coefficent 
+    fugacity_vap[i] =  phi_vap[i] * press_vap[i]                            # fugacity vapor calculation
+print(max(fugacity_vap))
+print(max(fugacity_liq))
 #----Below me is just plotting-------
-
 def plotter(plot_id, title, x_axis, x_label, y_axis, y_label, color, legend, location, x_lower_bound = 0, x_upper_bound = 1):
     """ plot graph
     Args:
@@ -83,23 +92,23 @@ def plotter(plot_id, title, x_axis, x_label, y_axis, y_label, color, legend, loc
 pp  = PdfPages(pdf_filename)
 plotter(1,
 	'Fugacity coefficent vs Pressure',
-	[press],
+	[press_vap, press_liq],
 	'Pressure (bar)',
-	[phi],
+	[phi_vap, phi_liq],
 	'Fugacity coefficent (Phi)',
-	['r'],
-	[''],
+	['r', 'r'],
+	['', ''],
 	'upper right',
 	)
 
 plotter(2,
 	'Fugacity vs Pressure',
-        [press],
+        [press_vap, press_liq],
 	'Pressure (bar)',
-	[fugacity],
+	[fugacity_vap, fugacity_liq],
 	'Fugacity (f)',
-	['b'],
-	[''],
+	['b', 'b'],
+	['', ''],
 	'lower right',
 	)
 pp.close()

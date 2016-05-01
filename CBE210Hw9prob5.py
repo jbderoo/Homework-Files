@@ -3,7 +3,7 @@ import numpy as np
 import math as m
 import matplotlib.pyplot as plt
 from matplotlib.backends.backend_pdf import PdfPages
-pdf_filename 										= os.path.expanduser('~') + '/Desktop/Spring_2016/CBE_210_Hw9_prob5.pdf'
+pdf_filename 		= os.path.expanduser('~') + '/Desktop/Spring_2016/CBE_210_Hw9_prob5.pdf'
 
 #---Critical Data---
 tempc_eth   		= 282.3 # K

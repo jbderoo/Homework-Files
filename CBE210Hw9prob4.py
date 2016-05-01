@@ -51,6 +51,7 @@ for i in range(len(press_vap)):
     fugacity_vap[i] =  phi_vap[i] * press_vap[i]                            # fugacity vapor calculation
 print(max(fugacity_vap))
 print(max(fugacity_liq))
+
 #----Below me is just plotting-------
 def plotter(plot_id, title, x_axis, x_label, y_axis, y_label, color, legend, location, x_lower_bound = 0, x_upper_bound = 1):
     """ plot graph

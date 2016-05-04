@@ -47,7 +47,7 @@ for i in range(len(press_data)):
 	Gibbs_mol[i] = total_Ge[i] * (1.000 / (methanolx[i] * benzenex[i])) 
 
 # Approximation for line fit
-fit	 = np.polyfit(np.transpose(methanolx[3:12]), Gibbs_mol[3:12], 1)
+fit	 = np.polyfit(np.transpose(methanolx[3:12]), Gibbs_mol[3:12], 5)
 plotfit  = np.polyval(fit, methanolx)
 
 # Assign values A12 and A21 

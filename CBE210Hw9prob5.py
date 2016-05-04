@@ -17,6 +17,9 @@ Z_prop      		= .289  # compressibility
 volc_prop   		= 188.4 # critical volume
 omega_prop  		= .14   # omega prop
 
+the_only_one = 50
+the_new_one = the_only_one
+
 #--Given Data--
 press     		= 30           # bar
 R         		= 83.14        # gas constant

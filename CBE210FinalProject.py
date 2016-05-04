@@ -74,8 +74,8 @@ R         = 8.314 # J / mol K
 # Begin Calculations
 for i in range(len(temp)):
     GeRT[i]  = ((A21 * ethanol_x[i]) + (A12 * water_x[i])) * (ethanol_x[i] * water_x[i])  #eq 12.9b
-    Ge[i]    = GeRT[i] * R * temp[i] # times T and R
-    HeRT     = -temp[i] * np.diff(GeRT) / np.diff(temp) # eq 11.58	
+    Ge[i]    = GeRT[i] * R * temp[i]							  # times T and R
+    HeRT     = -temp[i] * np.diff(GeRT) / np.diff(temp)					  # eq 11.58	
 
 for i in range(len(temp)):
 	Se = -np.diff(Ge) / np.diff(temp)        # calc S^E, table 11.1 page 415 
@@ -119,7 +119,7 @@ plotter(2,
         'Ge and Se', 
         [ethanol_x[0:20], ethanol_x[0:20]], # ending 1 before
         'Mol % ethanol', 
-        [Ge[0:20], Se[0:20]], # ending 1 before
+        [Ge[0:20], Se[0:20]],		    # ending 1 before
         'J / mol',
         ['b', 'r'],
         ['Ge', 'Se'],
@@ -129,7 +129,7 @@ plotter(3,
         'Ge He TSe for distillation column',
         [ethanol_x[0:20], ethanol_x[0:20], ethanol_x[0:20], ethanol_x[0:20]], # ending 1 before
         'Mol % ethanol', 
-        [Ge[0:20], Se[0:20], He[0:20], He2[0:20]], # ending 1 before
+        [Ge[0:20], Se[0:20], He[0:20], He2[0:20]],			      # ending 1 before
         'J / mol',
         ['b', 'r', 'g', 'k--'], 
         ['Ge', 'Se', 'He', 'He2'],

@@ -5,7 +5,7 @@ import matplotlib.pyplot as plt
 from matplotlib.backends.backend_pdf import PdfPages
 pdf_filename = os.path.expanduser('~') + '/Desktop/Spring_2016/CBE_210_FP.pdf'
 
-
+#----creates a function for easy plotting, ignore 9-43 ------
 def plotter(plot_id, title, x_axis, x_label, y_axis, y_label, color, legend, location, x_lower_bound = 0, x_upper_bound = 1):
     """ plot graph
     Args:
@@ -41,13 +41,17 @@ def plotter(plot_id, title, x_axis, x_label, y_axis, y_label, color, legend, loc
     ax.set_title(title)
     pp.savefig()
     return True
+#-------------
 
+# import data found on web
 yourFileName  = 'CBE210_FP_data2.txt'
 master_array  = np.loadtxt(yourFileName,skiprows=1)
 
 yourFileName  = 'Entropy_input.txt'
 entropy_array = np.loadtxt(yourFileName,skiprows=0)
+#-------------
 
+# 55 - 61 & 69 + 70 assigns data found on web, 62-68 creates 0s arrays for For loop  
 temp      = master_array[0:21,  0]
 ethanol_x = master_array[0:21,  1]
 ethanol_g = master_array[0:21,  2]
@@ -56,33 +60,32 @@ water_g   = master_array[0:21,  5]
 ethanol_y = master_array[0:21,  8]
 water_y   = master_array[0:21,  9]
 GeRT      = np.zeros(shape=(len(temp))) 
-HeT       = np.zeros(shape=(len(temp))) 
 HeRT      = np.zeros(shape=(len(temp))) 
 Ge        = np.zeros(shape=(len(temp))) 
 He        = np.zeros(shape=(len(temp))) 
 He2       = np.zeros(shape=(len(temp))) 
 s_real_13 = np.zeros(shape=(len(temp))) 
 s_real_7  = np.zeros(shape=(len(temp))) 
-GeR       = np.zeros(shape=(len(temp))) 
-Gert      = 0
 A12       = 1.6022
 A21       = 0.7947
 R         = 8.314 # J / mol K
+#-----------
 
+# Begin Calculations
 for i in range(len(temp)):
     GeRT[i]  = ((A21 * ethanol_x[i]) + (A12 * water_x[i])) * (ethanol_x[i] * water_x[i])  #eq 12.9b
     Ge[i]    = GeRT[i] * R * temp[i] # times T and R
     HeRT     = -temp[i] * np.diff(GeRT) / np.diff(temp) # eq 11.58	
 
 for i in range(len(temp)):
-	Se = -np.diff(Ge) / np.diff(temp) # calc S^E, table 11.1 page 415 
-	term1 = (np.diff(GeRT) / np.diff(temp)) 
-Se.resize(21,1) # resizes Se, puts a 0 in the 20th cell (removed during graphing) 
+	Se = -np.diff(Ge) / np.diff(temp)        # calc S^E, table 11.1 page 415 
+	term1 = (np.diff(GeRT) / np.diff(temp))  # used later in lne 88, table 11.1 page 415
+Se.resize(21,1)    # resizes Se, puts a 0 in the 20th cell (removed during graphing) 
 term1.resize(21,1) # resizes Se, puts a 0 in the 20th cell (removed during graphing) 
 
 for i in range(len(temp)):
-	He[i]  = Ge[i] + (temp[i] * Se[i]) # calcs He table 11.1
-	He2[i] = (-R * (temp[i]**2)) * term1[i] 
+	He[i]  = Ge[i] + (temp[i] * Se[i])       # calcs He table 11.1
+	He2[i] = (-R * (temp[i]**2)) * term1[i]  # calcs He table 11.1 a different way
 He.resize(21,1)  # resizes He, puts a 0 in the 20th cell (removed during graphing) 
 He2.resize(21,1) # resizes He, puts a 0 in the 20th cell (removed during graphing) 
 
@@ -114,9 +117,9 @@ plotter(1,
         )
 plotter(2,
         'Ge and Se', 
-        [ethanol_x, ethanol_x],
+        [ethanol_x[0:20], ethanol_x[0:20]], # ending 1 before
         'Mol % ethanol', 
-        [Ge, Se],
+        [Ge[0:20], Se[0:20]], # ending 1 before
         'J / mol',
         ['b', 'r'],
         ['Ge', 'Se'],
@@ -124,12 +127,12 @@ plotter(2,
         )
 plotter(3,
         'Ge He TSe for distillation column',
-        [ethanol_x[0:19], ethanol_x[0:19], ethanol_x[0:19], ethanol_x[0:19]], #,   ethanol_x, ethanol_x],
+        [ethanol_x[0:20], ethanol_x[0:20], ethanol_x[0:20], ethanol_x[0:20]], # ending 1 before
         'Mol % ethanol', 
-        [Ge[0:19], Se[0:19], He[0:19], He2[0:19]], #,  -GeR, -Ge],
+        [Ge[0:20], Se[0:20], He[0:20], He2[0:20]], # ending 1 before
         'J / mol',
-        ['b', 'r', 'g', 'k--'], #,   'r', 'g'],
-        ['Ge', 'Se', 'He', 'He2'], #,   'GeR', 'Ge'],
-        'upper right',
+        ['b', 'r', 'g', 'k--'], 
+        ['Ge', 'Se', 'He', 'He2'],
+        'lower left',
         )
 pp.close()

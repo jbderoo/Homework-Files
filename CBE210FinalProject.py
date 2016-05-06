@@ -66,16 +66,25 @@ He        = np.zeros(shape=(len(temp)))
 He2       = np.zeros(shape=(len(temp))) 
 s_real_13 = np.zeros(shape=(len(temp))) 
 s_real_7  = np.zeros(shape=(len(temp))) 
+H_real_7  = np.zeros(shape=(len(temp))) 
+H_real_13 = np.zeros(shape=(len(temp))) 
 A12       = 1.6022
 A21       = 0.7947
 R         = 8.314 # J / mol K
 #-----------
+
+# updated x1 values
+x1     = np.zeros(shape=(len(temp) - 1)) 
+for i in range(len(temp) - 1):
+	x1[i]  = (ethanol_x[i] + ethanol_x[i + 1]) / 2
+#------
 
 # Begin Calculations
 for i in range(len(temp)):
     GeRT[i]  = ((A21 * ethanol_x[i]) + (A12 * water_x[i])) * (ethanol_x[i] * water_x[i])  #eq 12.9b
     Ge[i]    = GeRT[i] * R * temp[i]							  # times T and R
     HeRT     = -temp[i] * np.diff(GeRT) / np.diff(temp)					  # eq 11.58	
+delta_G = np.diff(Ge)
 
 for i in range(len(temp)):
 	Se = -np.diff(Ge) / np.diff(temp)        # calc S^E, table 11.1 page 415 
@@ -89,10 +98,10 @@ for i in range(len(temp)):
 He.resize(21,1)  # resizes He, puts a 0 in the 20th cell (removed during graphing) 
 He2.resize(21,1) # resizes He, puts a 0 in the 20th cell (removed during graphing) 
 
-#Entropy balances over our distillation column
+#Entropy balances over our distillation column assuming Se is correct (they aren't)
 s_ideal_13 = (.35 * 1.217) + (.65 * .507) - R *(.35 * m.log(.35) + .65 * m.log(.65))
 s_ideal_7  = (.6  * 1.217) + (.4  * .507) - R *(.6  * m.log(.6)  + .4  * m.log(.4))
-s_real = entropy_array 
+s_real = entropy_array[0,:] 
 
 for i in range(len(temp)):
 	s_real_13[i] = s_ideal_13 + Se[i]
@@ -100,7 +109,24 @@ for i in range(len(temp)):
 
 # entropy balance of the distillation column
 delta_s = (2.7 * s_real) + (2.35 * s_real_13) - (5 * s_real_7)
+print('The entropy of our distillation column is %5.3f J/ K ' % delta_s[14]) # index 14 corresponds to temp input of distillation.
+print('The temperature of the distillation is %5.3f C.' % temp[14])
 
+#Enthalpy balances over our distillation column assuming He is correct (they aren't)
+
+enthalpy_eth = 4670.86 # J / mol
+enthalpy_h2o = -1331   # J / mol 
+
+H_ideal_13 = (.35 * enthalpy_eth) + (.65 * enthalpy_h2o)
+H_ideal_7  = (.6 * enthalpy_eth)  + (.4 * enthalpy_h2o)
+H_real     = entropy_array[1,:]
+
+for i in range(len(temp)):
+	H_real_13[i] = H_ideal_13 + He[i]
+	H_real_7[i]  = H_ideal_7  + He[i]
+
+delta_H = (2.7 * H_real) + (2.35 * H_real_13) - (5 * H_real_7)
+print('The enthalpy of our distillation column is %5.3f J / K ' % delta_H[14])
 
 #---- Below is all plotting-----
 
@@ -117,9 +143,9 @@ plotter(1,
         )
 plotter(2,
         'Ge and Se', 
-        [ethanol_x[0:20], ethanol_x[0:20]], # ending 1 before
+        [ethanol_x, x1], # ending 1 before
         'Mol % ethanol', 
-        [Ge[0:20], Se[0:20]],		    # ending 1 before
+        [Ge, Se[0:20]],		    # ending 1 before
         'J / mol',
         ['b', 'r'],
         ['Ge', 'Se'],
@@ -127,7 +153,7 @@ plotter(2,
         )
 plotter(3,
         'Ge He TSe for distillation column',
-        [ethanol_x[0:20], ethanol_x[0:20], ethanol_x[0:20], ethanol_x[0:20]], # ending 1 before
+        [x1, x1, x1, x1], # ending 1 before
         'Mol % ethanol', 
         [Ge[0:20], Se[0:20], He[0:20], He2[0:20]],			      # ending 1 before
         'J / mol',

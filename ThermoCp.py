@@ -22,4 +22,5 @@ def joule(A, B, C, D, input_stream, output_stream):
     return net_joules * 8.3145 
 test = joule(3.28, .593, 0, .04, 800-273, 300-273)
 print('Does', test, '= -15060? Your answer is in J/mol')
-print(joule(3.47, 1.45, 0, .121, 250, 650))
+print(joule(3.47, 1.45, 0, .121, 37 + 273, 273))
+print(joule(3.518, 20.001, -6.002, 0, 37+273, 78.9 + 273))
